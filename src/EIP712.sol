@@ -2,7 +2,9 @@
 
 pragma solidity ^0.8.0;
 
-contract EIP712 {
+import "./ERC20.sol";
+
+contract EIP712 is ERC20("DREAM", "DRM") {
 
     bytes32 private DOMAIN_SEPARATOR;
     
@@ -14,7 +16,7 @@ contract EIP712 {
         return DOMAIN_SEPARATOR;
     }
     
-    function _toTypedDataHash(bytes32 structHash) public returns (bytes32) {
+    function _toTypedDataHash(bytes32 structHash) override public returns (bytes32) {
         
     }
 

@@ -38,16 +38,25 @@ contract DreamTokenTest2 is Test {
             0, 
             1 days
             ));
+        // sturctHash -> sign을 할 수 있는 구조로..??
         bytes32 hash = drm._toTypedDataHash(structHash);
+        // alicePK로 hash 서명
         (uint8 v, bytes32 r, bytes32 s) = vm.sign(alicePK, hash);
 
+        // alice의 drm.nonces가 0과 같은지 확인
         assertEq(drm.nonces(alice), 0);
+        // permit
         drm.permit(alice, address(this), 10 ether, 1 days, v, r, s);
 
+        // alice의 allowance가 해당 계정에 대해 10 ether가 있는지 확인
         assertEq(drm.allowance(alice, address(this)), 10 ether);
+        // alice nonces가 1 추가 되었는지 확인
         assertEq(drm.nonces(alice), 1);
+
+        
     }
 
+    // deadline을 1 days로 설정했을때, 이를 넘었다면 permit이 되면 안됨
     function testFailExpiredPermit() public {
         bytes32 hash = keccak256(abi.encode(
             keccak256("Permit(address owner,address spender,uint256 value,uint256 nonce,uint256 deadline)"), 
@@ -65,6 +74,7 @@ contract DreamTokenTest2 is Test {
         drm.permit(alice, address(this), 10 ether, 1 days, v, r, s);
     }
 
+    // signer가 잘못됐을때 permit fail
     function testFailInvalidSigner() public {
         bytes32 hash = keccak256(abi.encode(
             keccak256("Permit(address owner,address spender,uint256 value,uint256 nonce,uint256 deadline)"), 
@@ -80,6 +90,7 @@ contract DreamTokenTest2 is Test {
         drm.permit(alice, address(this), 10 ether, 1 days, v, r, s);
     }
 
+    // nonce가 다를때 fail
     function testFailInvalidNonce() public {
         bytes32 hash = keccak256(abi.encode(
             keccak256("Permit(address owner,address spender,uint256 value,uint256 nonce,uint256 deadline)"), 
